@@ -33,7 +33,6 @@ pub async fn get_spotify_token(client_id: &str, client_secret: &str) -> Result<T
     Ok(token_data)
 }
 
-#[allow(dead_code)]
 pub fn get_spotify_data(access_token: String, token_type: String) -> bool {
     println!("{} {}", access_token, token_type);
     return true;
