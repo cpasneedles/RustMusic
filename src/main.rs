@@ -18,9 +18,8 @@ use actix_cors::Cors;
 use actix_web::{http, App, HttpServer};
 use std::env;
 use std::path::Path;
-
+ 
 #[actix_web::main]
-
 async fn main() -> std::io::Result<()> {
     let current_dir = env::current_dir().expect("Unable to get current directory");
     let project_dir = Path::new(&current_dir).join("src/settings");
