@@ -4,14 +4,14 @@ Welcome to RustMusic!
 
 ## Introduction
 
-RustMusic is a free and open-source music player that provides an alternative to Spotify for listening to locally downloaded music. This project leverages the power of the Spotify API and metadata to enhance your music listening experience.
+RustMusic is a free and open-source music player that provides an alternative to Spotify for listening to locally downloaded music. This project leverages various APIs, including Discogs and Shazam, to enhance your music library and provide an enriched music discovery experience.
 
 Please note that the current version is under development and is not precompiled. You are encouraged to download the source code and compile it yourself.
 
 ## Features
 
 - Enjoy a Spotify-like music player experience for your locally stored music.
-- Utilize the Spotify API and metadata to fetch track information and enhance your music library.
+- Utilize APIs from Discogs and Shazam to enhance track information and enable music discovery.
 - Support for various audio file formats, including:
   - MP3
   - WAV
@@ -36,6 +36,10 @@ RustMusic supports a variety of audio file formats, allowing you to enjoy a wide
 ```rs
 ["mp3", "wav", "flac", "aac", "ogg", "wma"]
 ```
+
+## Music Discovery
+
+RustMusic goes beyond just playing your downloaded music. It harnesses the power of Discogs and Shazam APIs to provide music discovery features. Discogs integration enriches your library with accurate track information, while Shazam API helps identify tracks that lack metadata.
 
 ## Getting Involved
 

@@ -1,6 +1,6 @@
 [package]
 name = "n"
-version = "1.0.2"
+version = "1.1.2"
 edition = "2021"
 description = "Music app in Rust"
 authors = ["Needles"]
