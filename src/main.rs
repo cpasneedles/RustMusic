@@ -1,4 +1,5 @@
 mod api {
+    pub mod acoustid;
     pub mod spotify;
 }
 
@@ -12,35 +13,31 @@ mod controllers {
     pub mod tracks;
 }
 
+mod settings {
+    pub mod env;
+}
+
+// use std::path::Path;
+
+use api::spotify::{spotify_search, spotify_get};
 use controllers::{home::get_home, tracks::get_tracks};
 
 use actix_cors::Cors;
 use actix_web::{http, App, HttpServer};
-use std::env;
-use std::path::Path;
- 
+// use data::utils::get_track_data2;
+
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    let current_dir = env::current_dir().expect("Unable to get current directory");
-    let project_dir = Path::new(&current_dir).join("src/settings");
-    env::set_current_dir(&project_dir).expect("Unable to set current directory");
+async fn main() -> std::io::Result<()> {        
+    // let file_path = Path::new("E:/Musics/Captaine Roshi - Larosh - 2022 - WEB FLAC 16BITS 44.1KHZ EICHBAUM/17 - Ma quête.flac");
 
-    dotenv::dotenv().ok();
-
-    let client_id = env::var("CLIENT_ID").expect("CLIENT_ID is not defined in the .env file");
-    let client_secret =
-        env::var("CLIENT_SECRET").expect("CLIENT_SECRET is not defined in the .env file");
-
-    match api::spotify::get_spotify_token(&client_id, &client_secret).await {
-        Ok(token_data) => {
-            println!("Token Data: {:?}", token_data);
-            
-            println!("{}",  api::spotify::get_spotify_data(token_data.access_token, token_data.token_type))
-        }
-        Err(error) => {
-            println!("Error getting token: {:?}", error);
-        }
-    }
+    // match get_track_data2(file_path).await {
+    //     Some(track_data) => {
+    //         println!("Track Data: {:?}", track_data);
+    //     }
+    //     None => {
+    //         println!("Aucune donnée de piste trouvée pour le fichier {:?}", file_path);
+    //     }
+    // }
 
     HttpServer::new(|| {
         let cors = Cors::default()
@@ -50,7 +47,12 @@ async fn main() -> std::io::Result<()> {
             .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600);
 
-        App::new().wrap(cors).service(get_tracks).service(get_home)
+        App::new()
+            .wrap(cors)
+            .service(get_tracks)
+            .service(get_home)
+            .service(spotify_get)
+            .service(spotify_search)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
