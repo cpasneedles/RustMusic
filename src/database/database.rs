@@ -2,9 +2,9 @@ use actix_web::{get, Responder, HttpResponse};
 use serde_json::json;
 
 #[get("/database")]
-pub async fn get_home() -> impl Responder {
+pub async fn get_database() -> impl Responder {
     let json_response = json!({
-        "message": "Welcome to the home page!",
+        "message": "Database!",
     });
     HttpResponse::Ok().json(json_response)
 }
