@@ -1,5 +1,4 @@
 mod api {
-    pub mod acoustid;
     pub mod spotify;
 }
 
