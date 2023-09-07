@@ -1,41 +1,11 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
-#[derive(Debug, Serialize)]
-pub struct TrackData {
-    pub path: String,
-    pub title: String,
-    pub artist: String,
-    pub album: String,
-    pub album_artist: String,
-    pub picture: String,
-    pub year: String,
-    pub index: i64,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AlbumData {
-    pub id: String,
-    pub title: String,
-    pub picture: String,
-    pub year: String,
-    pub tracks: Vec<TrackData2>,
-    pub artist: String,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ArtistData {
-    pub id: String,
-    pub artist: String,
-    pub albums: Vec<AlbumData>,
-}
+// Structures communes
 
 #[derive(Deserialize)]
-pub struct PathInfo {
+pub struct TracksQuery {
     pub path: String,
 }
-
-// Spotify
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenData {
@@ -44,7 +14,15 @@ pub struct TokenData {
     pub expires_in: i64,
 }
 
-// Spotify Error Response
+#[derive(Debug, Serialize)]
+pub struct Data {
+    pub tracks: Vec<Item>,
+    pub albums: Vec<Album>,
+    pub artists: Vec<Artist>,
+}
+
+// Structures Spotify
+
 #[derive(Debug, Deserialize)]
 pub struct SpotifyErrorWrapper {
     pub error: SpotifyError,
@@ -55,28 +33,22 @@ pub struct SpotifyError {
     pub status: i32,
     pub message: String,
 }
-// Spotify get track query
+
+// Requêtes Spotify
+
 #[derive(Debug, Deserialize)]
 pub struct TrackQuery {
     pub endpoint: String,
     pub id: String,
 }
 
-// Spotify Search Query
 #[derive(Debug, Deserialize)]
 pub struct SearchQuery {
     pub query: String,
 }
 
-// Spotify Track Response
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TrackData2 {
-    pub path: String,
-    pub result: Item,
-}
+// Réponses Spotify
 
-// Spotify Search Response
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SpotifySearchResponse {
@@ -90,7 +62,7 @@ pub struct Tracks {
     pub limit: i64,
     pub next: Option<String>,
     pub offset: i64,
-    pub previous: Option<Value>, 
+    pub previous: Option<String>,
     pub total: i64,
     pub items: Vec<Item>,
 }
@@ -98,8 +70,10 @@ pub struct Tracks {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Item {
+    #[serde(skip_deserializing)]
+    pub artist: String,
     pub album: Album,
-    pub artists: Vec<Artist2>,
+    pub artists: Vec<Artist>,
     #[serde(rename = "available_markets")]
     pub available_markets: Vec<String>,
     #[serde(rename = "disc_number")]
@@ -110,7 +84,7 @@ pub struct Item {
     #[serde(rename = "external_ids")]
     pub external_ids: ExternalIds,
     #[serde(rename = "external_urls")]
-    pub external_urls: ExternalUrls4,
+    pub external_urls: ExternalUrls,
     pub href: String,
     pub id: String,
     pub name: String,
@@ -124,11 +98,15 @@ pub struct Item {
     pub uri: String,
     #[serde(rename = "is_local")]
     pub is_local: bool,
+    #[serde(skip_deserializing)]
+    pub path: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Album {
+    #[serde(skip_deserializing)]
+    pub artist: String,
     #[serde(rename = "album_type")]
     pub album_type: String,
     #[serde(rename = "total_tracks")]
@@ -149,12 +127,9 @@ pub struct Album {
     pub type_field: String,
     pub uri: String,
     pub artists: Vec<Artist>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExternalUrls {
-    pub spotify: String,
+    #[serde(skip_deserializing)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub items: Vec<Item>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -169,38 +144,16 @@ pub struct Image {
 #[serde(rename_all = "camelCase")]
 pub struct Artist {
     #[serde(rename = "external_urls")]
-    pub external_urls: ExternalUrls2,
+    pub external_urls: ExternalUrls,
     pub href: String,
     pub id: String,
     pub name: String,
     #[serde(rename = "type")]
     pub type_field: String,
     pub uri: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExternalUrls2 {
-    pub spotify: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Artist2 {
-    #[serde(rename = "external_urls")]
-    pub external_urls: ExternalUrls3,
-    pub href: String,
-    pub id: String,
-    pub name: String,
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub uri: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExternalUrls3 {
-    pub spotify: String,
+    #[serde(skip_deserializing)]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub albums: Vec<Album>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -211,6 +164,6 @@ pub struct ExternalIds {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ExternalUrls4 {
+pub struct ExternalUrls {
     pub spotify: String,
 }

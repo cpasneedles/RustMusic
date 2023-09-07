@@ -16,7 +16,7 @@ const ROOT_URL: &str = "https://api.spotify.com/v1/";
 
 // Controllers
 
-#[get("/spotify/get")]
+#[get("/get")]
 pub async fn spotify_get(q: web::Query<TrackQuery>) -> impl Responder {
     if !q.endpoint.is_empty() {
         let search_query = format!("{}/{}", q.endpoint, q.id);
@@ -28,7 +28,7 @@ pub async fn spotify_get(q: web::Query<TrackQuery>) -> impl Responder {
     }
 }
 
-#[get("/spotify/search")]
+#[get("/search")]
 pub async fn spotify_search(q: web::Query<SearchQuery>) -> impl Responder {
     let search_query = format!("search?q={}&type=track&limit=1", q.query);
     handle_spotify_request(Method::GET, &search_query, "search").await

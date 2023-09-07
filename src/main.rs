@@ -16,28 +16,17 @@ mod settings {
     pub mod env;
 }
 
-// use std::path::Path;
-
-use api::spotify::{spotify_search, spotify_get};
-use controllers::{home::get_home, tracks::get_tracks};
+use api::spotify::{spotify_get, spotify_search};
+use controllers::{
+    home::get_home,
+    tracks::{get_albums, get_artists, get_tracks},
+};
 
 use actix_cors::Cors;
-use actix_web::{http, App, HttpServer};
-// use data::utils::get_track_data2;
+use actix_web::{http, web, App, HttpServer};
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {        
-    // let file_path = Path::new("E:/Musics/Captaine Roshi - Larosh - 2022 - WEB FLAC 16BITS 44.1KHZ EICHBAUM/17 - Ma quête.flac");
-
-    // match get_track_data2(file_path).await {
-    //     Some(track_data) => {
-    //         println!("Track Data: {:?}", track_data);
-    //     }
-    //     None => {
-    //         println!("Aucune donnée de piste trouvée pour le fichier {:?}", file_path);
-    //     }
-    // }
-
+async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         let cors = Cors::default()
             .allowed_origin("http://localhost:3000")
@@ -48,12 +37,21 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .wrap(cors)
-            .service(get_tracks)
+            .configure(spotify_routes) // Spotify Routes
             .service(get_home)
-            .service(spotify_get)
-            .service(spotify_search)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
+}
+
+fn spotify_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(
+        web::scope("/spotify")
+            .service(get_tracks)
+            .service(get_albums)
+            .service(get_artists)
+            .service(spotify_get)
+            .service(spotify_search),
+    );
 }

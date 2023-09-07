@@ -8,3 +8,4 @@ pub async fn get_database() -> impl Responder {
     });
     HttpResponse::Ok().json(json_response)
 }
+ 
